@@ -59,7 +59,7 @@
 			nextEl = $(this.elements.filter(selOrIndex));
 		}
 
-		if (!nextEl) return;
+		if (!nextEl || this.current === nextEl.index()) return;
 
 		var currentEl = $(this.elements.get(this.current));
 		if (anim) {
