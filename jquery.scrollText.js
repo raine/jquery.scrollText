@@ -50,7 +50,7 @@
 	};
 
 	ScrollText.prototype.show = function(selOrIndex, anim) {
-		anim = anim || anim === undefined
+		anim = anim || anim === undefined;
 
 		var nextEl;
 		if ($.type(selOrIndex) === 'number') {
@@ -60,8 +60,9 @@
 		}
 
 		if (!nextEl || this.current === nextEl.index()) return;
-
 		var currentEl = $(this.elements.get(this.current));
+
+		var deferred;
 		if (anim) {
 			nextEl.css('top', -this.height);
 
@@ -69,20 +70,19 @@
 				top: -this.height
 			}, 400, 'easeInQuart').promise();
 
-			var deferred = new $.Deferred();
+			deferred = new $.Deferred();
 			p.done(function() {
 				nextEl.animate({
 					top: 0
 				}, 600, 'easeOutQuart').promise().done(deferred.resolve);
 			});
-
-			return deferred.promise();
 		} else {
 			nextEl.css('top', 0);
 			currentEl.css('top', -this.height);
 		}
 
 		this.current = nextEl.index();
+		if (deferred) return deferred.promise();
 	};
 
 	ScrollText.prototype.next = function() {
