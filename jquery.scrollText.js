@@ -49,7 +49,9 @@
 		});
 	};
 
-	ScrollText.prototype.show = function(selOrIndex) {
+	ScrollText.prototype.show = function(selOrIndex, anim) {
+		anim = anim || anim === undefined
+
 		var nextEl;
 		if ($.type(selOrIndex) === 'number') {
 			nextEl = $(this.elements.get(selOrIndex));
@@ -58,21 +60,29 @@
 		}
 
 		if (!nextEl) return;
-		nextEl.css('top', -this.height);
 
-		var p = $(this.elements.get(this.current)).animate({
-			top: -this.height
-		}, 400, 'easeInQuart').promise();
+		var currentEl = $(this.elements.get(this.current));
+		if (anim) {
+			nextEl.css('top', -this.height);
 
-		var deferred = new $.Deferred();
-		p.done(function() {
-			nextEl.animate({
-				top: 0
-			}, 600, 'easeOutQuart').promise().done(deferred.resolve);
-		});
+			var p = currentEl.animate({
+				top: -this.height
+			}, 400, 'easeInQuart').promise();
+
+			var deferred = new $.Deferred();
+			p.done(function() {
+				nextEl.animate({
+					top: 0
+				}, 600, 'easeOutQuart').promise().done(deferred.resolve);
+			});
+
+			return deferred.promise();
+		} else {
+			nextEl.css('top', 0);
+			currentEl.css('top', -this.height);
+		}
 
 		this.current = nextEl.index();
-		return deferred.promise();
 	};
 
 	ScrollText.prototype.next = function() {
